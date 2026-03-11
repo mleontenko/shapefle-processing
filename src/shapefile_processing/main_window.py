@@ -64,6 +64,10 @@ class MainWindow(QMainWindow):
         assign_ids_action.triggered.connect(self.assign_ids)
         toolbar.addAction(assign_ids_action)
 
+        calculate_spatial_attributes_action = QAction('Calculate Spatial Attributes', self)
+        calculate_spatial_attributes_action.triggered.connect(self.calculate_spatial_attributes)
+        toolbar.addAction(calculate_spatial_attributes_action)
+
     def load_shapefile(self):
         file_name, _ = QFileDialog.getOpenFileName(
             self,
@@ -118,6 +122,20 @@ class MainWindow(QMainWindow):
             return
 
         QMessageBox.information(self, 'IDs Assigned', f'Assigned BLD IDs to {assigned_count} features.')
+
+    def calculate_spatial_attributes(self):
+        updated_count = self.shapefile_manager.calculate_area()
+        if updated_count is None:
+            QMessageBox.information(self, 'No Layer Loaded', 'Please load a shapefile first.')
+            return
+
+        self.shapefile_manager.calculate_perimeter()
+
+        QMessageBox.information(
+            self,
+            'Spatial Attributes Calculated',
+            f'Calculated area and perimeter for {updated_count} features.',
+        )
 
     def export_shapefile(self):
         output_path, _ = QFileDialog.getSaveFileName(

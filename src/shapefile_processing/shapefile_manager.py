@@ -1,12 +1,14 @@
 import geopandas as gpd
 
 from shapefile_processing.map_renderer import MapRenderer
+from shapefile_processing.spatial_metrics_service import SpatialMetricsService
 
 
 class ShapefileManager:
-    def __init__(self, plot_widget, map_renderer=None):
+    def __init__(self, plot_widget, map_renderer=None, spatial_metrics_service=None):
         self.plot_widget = plot_widget
         self.map_renderer = map_renderer or MapRenderer(plot_widget)
+        self.spatial_metrics_service = spatial_metrics_service or SpatialMetricsService()
         self.loaded_gdf = None
 
     def load_and_render(self, file_name):
@@ -37,6 +39,21 @@ class ShapefileManager:
         # convert 'id' column to object type to ensure compatibility with shapefile export
         self.loaded_gdf['id'] = self.loaded_gdf['id'].astype('object')
         return feature_count
+
+    def calculate_area(self):
+        if self.loaded_gdf is None:
+            return None
+
+        self.loaded_gdf = self.spatial_metrics_service.calculate_area(self.loaded_gdf)
+        return len(self.loaded_gdf)
+
+    def calculate_perimeter(self):
+        if self.loaded_gdf is None:
+            return None
+
+        self.loaded_gdf = self.spatial_metrics_service.calculate_perimeter(self.loaded_gdf)
+        return len(self.loaded_gdf)
+
 
     def export_shapefile(self, output_path):
         if self.loaded_gdf is None:
