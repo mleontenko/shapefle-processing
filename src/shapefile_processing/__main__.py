@@ -50,6 +50,10 @@ class MainWindow(QMainWindow):
         load_action.triggered.connect(self.load_shapefile)
         file_menu.addAction(load_action)
 
+        export_action = QAction('Export Shapefile', self)
+        export_action.triggered.connect(self.export_shapefile)
+        file_menu.addAction(export_action)
+
         attribute_table_action = QAction('Attribute Table', self)
         attribute_table_action.triggered.connect(self.show_attribute_table)
         view_menu.addAction(attribute_table_action)
@@ -114,6 +118,32 @@ class MainWindow(QMainWindow):
             return
 
         QMessageBox.information(self, 'IDs Assigned', f'Assigned BLD IDs to {assigned_count} features.')
+
+    def export_shapefile(self):
+        output_path, _ = QFileDialog.getSaveFileName(
+            self,
+            'Export Shapefile',
+            '',
+            'Shapefiles (*.shp);;All Files (*)',
+        )
+
+        if not output_path:
+            return
+
+        if not output_path.lower().endswith('.shp'):
+            output_path = f'{output_path}.shp'
+
+        try:
+            exported = self.shapefile_manager.export_shapefile(output_path)
+        except Exception as error:
+            QMessageBox.critical(self, 'Export Error', f'Failed to export shapefile:\n{error}')
+            return
+
+        if not exported:
+            QMessageBox.information(self, 'No Layer Loaded', 'Please load a shapefile first.')
+            return
+
+        QMessageBox.information(self, 'Export Complete', f'Shapefile exported to:\n{output_path}')
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
