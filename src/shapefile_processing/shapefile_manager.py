@@ -1,14 +1,16 @@
 import geopandas as gpd
 
+from shapefile_processing.data_quality_services import DataQualityServices
 from shapefile_processing.map_renderer import MapRenderer
 from shapefile_processing.spatial_metrics_service import SpatialMetricsService
 
 
 class ShapefileManager:
-    def __init__(self, plot_widget, map_renderer=None, spatial_metrics_service=None):
+    def __init__(self, plot_widget, map_renderer=None, spatial_metrics_service=None, data_quality_services=None):
         self.plot_widget = plot_widget
         self.map_renderer = map_renderer or MapRenderer(plot_widget)
         self.spatial_metrics_service = spatial_metrics_service or SpatialMetricsService()
+        self.data_quality_services = data_quality_services or DataQualityServices()
         self.loaded_gdf = None
 
     def load_and_render(self, file_name):
@@ -81,6 +83,15 @@ class ShapefileManager:
             self.loaded_gdf,
         )
         return len(self.loaded_gdf)
+
+    def detect_invalid_geometry(self):
+        if self.loaded_gdf is None:
+            return None
+
+        self.loaded_gdf = self.data_quality_services.detect_invalid_geometry(self.loaded_gdf)
+        invalid_count = int(self.loaded_gdf['invalid_geom'].sum())
+        total_count = len(self.loaded_gdf)
+        return invalid_count, total_count
 
     def export_shapefile(self, output_path):
         if self.loaded_gdf is None:

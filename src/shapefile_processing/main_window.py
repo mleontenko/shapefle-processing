@@ -68,6 +68,10 @@ class MainWindow(QMainWindow):
         calculate_spatial_attributes_action.triggered.connect(self.calculate_spatial_attributes)
         toolbar.addAction(calculate_spatial_attributes_action)
 
+        data_quality_action = QAction('Data Quality Checks', self)
+        data_quality_action.triggered.connect(self.data_quality_checks)
+        toolbar.addAction(data_quality_action)
+
     def load_shapefile(self):
         file_name, _ = QFileDialog.getOpenFileName(
             self,
@@ -138,6 +142,23 @@ class MainWindow(QMainWindow):
             self,
             'Spatial Attributes Calculated',
             f'Calculated area, perimeter, nearest neighbour distance, number of neighbors, and centroid coordinates for {updated_count} features.',
+        )
+
+    def data_quality_checks(self):
+        result = self.shapefile_manager.detect_invalid_geometry()
+        if result is None:
+            QMessageBox.information(self, 'No Layer Loaded', 'Please load a shapefile first.')
+            return
+
+        invalid_count, total_count = result
+        QMessageBox.information(
+            self,
+            'Data Quality Checks',
+            f'Invalid geometry check complete.\n\n'
+            f'  • Features checked : {total_count}\n'
+            f'  • Invalid geometries: {invalid_count}\n\n'
+            f'The "invalid_geom" attribute has been added to the layer.\n'
+            f'(True = invalid, False = valid)',
         )
 
     def export_shapefile(self):
