@@ -135,7 +135,7 @@ class MainWindow(QMainWindow):
         QMessageBox.information(
             self,
             'Spatial Attributes Calculated',
-            f'Calculated area, perimeter, and dnn for {updated_count} features.',
+            f'Calculated area, perimeter, dnn, and nearest for {updated_count} features.',
         )
 
     def export_shapefile(self):
