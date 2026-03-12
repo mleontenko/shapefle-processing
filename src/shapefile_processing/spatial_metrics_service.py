@@ -66,3 +66,30 @@ class SpatialMetricsService:
         # Write nearest distance (distance_nearest).
         gdf[column_name] = nearest_per_feature[column_name].reindex(row_index).values
         return gdf
+
+    def calculate_number_of_neighbors(self, gdf, radius=1.0, column_name='num_neighb'):
+        left = gdf.reset_index(drop=True)
+        right = left.copy()
+
+        # Create buffered geometries for spatial join
+        left_buffered = left.copy()
+        left_buffered.geometry = left_buffered.geometry.buffer(radius)
+
+        # Spatial join to find all geometries within radius
+        neighbors = gpd.sjoin(
+            left_buffered,
+            right,
+            how='left',
+            predicate='intersects',
+            lsuffix='left',
+            rsuffix='right',
+        )
+
+        # Count neighbors per feature, excluding self
+        neighbor_count = neighbors[neighbors.index != neighbors['index_right']].groupby(level=0).size()
+
+        # Assign counts, filling missing indices with 0
+        row_index = gdf.reset_index(drop=True).index
+        gdf[column_name] = neighbor_count.reindex(row_index, fill_value=0).values
+
+        return gdf
