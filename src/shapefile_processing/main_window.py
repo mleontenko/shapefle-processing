@@ -60,17 +60,28 @@ class MainWindow(QMainWindow):
 
     def create_toolbar(self):
         toolbar = self.addToolBar('Tools')
-        assign_ids_action = QAction('Assign IDs', self)
-        assign_ids_action.triggered.connect(self.assign_ids)
-        toolbar.addAction(assign_ids_action)
+        self.assign_ids_action = QAction('1. Assign IDs', self)
+        self.assign_ids_action.triggered.connect(self.assign_ids)
+        toolbar.addAction(self.assign_ids_action)
 
-        calculate_spatial_attributes_action = QAction('Calculate Spatial Attributes', self)
-        calculate_spatial_attributes_action.triggered.connect(self.calculate_spatial_attributes)
-        toolbar.addAction(calculate_spatial_attributes_action)
+        self.calculate_spatial_attributes_action = QAction('2. Calculate Spatial Attributes', self)
+        self.calculate_spatial_attributes_action.triggered.connect(self.calculate_spatial_attributes)
+        toolbar.addAction(self.calculate_spatial_attributes_action)
 
-        data_quality_action = QAction('Data Quality Checks', self)
-        data_quality_action.triggered.connect(self.data_quality_checks)
-        toolbar.addAction(data_quality_action)
+        self.data_quality_action = QAction('3. Data Quality Checks', self)
+        self.data_quality_action.triggered.connect(self.data_quality_checks)
+        toolbar.addAction(self.data_quality_action)
+
+        self.update_layer_actions()
+
+    def update_layer_actions(self):
+        has_loaded_features = (
+            self.shapefile_manager.loaded_gdf is not None
+            and not self.shapefile_manager.loaded_gdf.empty
+        )
+        self.assign_ids_action.setEnabled(has_loaded_features)
+        self.calculate_spatial_attributes_action.setEnabled(has_loaded_features)
+        self.data_quality_action.setEnabled(has_loaded_features)
 
     def load_shapefile(self):
         file_name, _ = QFileDialog.getOpenFileName(
@@ -86,12 +97,16 @@ class MainWindow(QMainWindow):
         try:
             has_features = self.shapefile_manager.load_and_render(file_name)
         except Exception as error:
+            self.update_layer_actions()
             QMessageBox.critical(self, 'Load Error', f'Failed to load shapefile:\n{error}')
             return
 
         if not has_features:
+            self.update_layer_actions()
             QMessageBox.information(self, 'Empty Layer', 'The selected shapefile contains no features.')
             return
+
+        self.update_layer_actions()
 
     def show_attribute_table(self):
         attributes = self.shapefile_manager.get_attributes()
