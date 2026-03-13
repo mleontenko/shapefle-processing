@@ -145,20 +145,23 @@ class MainWindow(QMainWindow):
         )
 
     def data_quality_checks(self):
-        result = self.shapefile_manager.detect_invalid_geometry()
-        if result is None:
+        if self.shapefile_manager.loaded_gdf is None:
             QMessageBox.information(self, 'No Layer Loaded', 'Please load a shapefile first.')
             return
 
-        invalid_count, total_count = result
+        invalid_count, total_count = self.shapefile_manager.detect_invalid_geometry()
+        overlap_count, _ = self.shapefile_manager.detect_overlapping_polygons()
+
         QMessageBox.information(
             self,
             'Data Quality Checks',
-            f'Invalid geometry check complete.\n\n'
-            f'  • Features checked : {total_count}\n'
-            f'  • Invalid geometries: {invalid_count}\n\n'
-            f'The "invalid_geom" attribute has been added to the layer.\n'
-            f'(True = invalid, False = valid)',
+            f'Data quality checks complete.\n\n'
+            f'  \u2022 Features checked   : {total_count}\n'
+            f'  \u2022 Invalid geometries  : {invalid_count}\n'
+            f'  \u2022 Overlapping polygons: {overlap_count}\n\n'
+            f'Columns added to layer:\n'
+            f'  - "invalid_geom" (True = invalid geometry)\n'
+            f'  - "overlap"      (True = overlaps another polygon)',
         )
 
     def export_shapefile(self):

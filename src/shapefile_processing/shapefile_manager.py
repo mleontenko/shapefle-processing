@@ -93,6 +93,15 @@ class ShapefileManager:
         total_count = len(self.loaded_gdf)
         return invalid_count, total_count
 
+    def detect_overlapping_polygons(self):
+        if self.loaded_gdf is None:
+            return None
+
+        self.loaded_gdf = self.data_quality_services.detect_overlapping_polygons(self.loaded_gdf)
+        overlap_count = int(self.loaded_gdf['overlap'].sum())
+        total_count = len(self.loaded_gdf)
+        return overlap_count, total_count
+
     def export_shapefile(self, output_path):
         if self.loaded_gdf is None:
             return False
