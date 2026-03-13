@@ -1,8 +1,8 @@
 import geopandas as gpd
 
-from shapefile_processing.data_quality_services import DataQualityServices
+from shapefile_processing.services.data_quality_services import DataQualityServices
 from shapefile_processing.map_renderer import MapRenderer
-from shapefile_processing.spatial_metrics_service import SpatialMetricsService
+from shapefile_processing.services.spatial_metrics_service import SpatialMetricsService
 
 
 class ShapefileManager:

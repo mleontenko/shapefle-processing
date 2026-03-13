@@ -56,11 +56,11 @@ class SpatialMetricsService:
         right_id_column_name = f'{id_column_name}_right'
         # nearest neighbor's explicit ID value from the right layer
         nearest_id_series = nearest_per_feature[right_id_column_name]
-    
+
 
         # Align computed values back to the original row order in `gdf`.
         # 'nearest_per_feature' is indexed by left feature index; reindex fills by matching index.
-        row_index = gdf.reset_index(drop=True).index        
+        row_index = gdf.reset_index(drop=True).index
         # Write nearest neighbor identifier (ID or fallback index).
         gdf[nearest_column_name] = nearest_id_series.reindex(row_index).values
         # Write nearest distance (distance_nearest).
@@ -93,7 +93,7 @@ class SpatialMetricsService:
         gdf[column_name] = neighbor_count.reindex(row_index, fill_value=0).values
 
         return gdf
-    
+
     def calculate_centroid_coordinates(self, gdf, x_column='centroid_x', y_column='centroid_y'):
         gdf[x_column] = gdf.geometry.centroid.x
         gdf[y_column] = gdf.geometry.centroid.y
