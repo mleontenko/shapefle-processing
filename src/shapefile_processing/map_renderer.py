@@ -1,4 +1,4 @@
-from PyQt6.QtCore import QPointF
+from PyQt6.QtCore import QPointF, QRectF
 from PyQt6.QtGui import QBrush, QColor, QPolygonF
 from PyQt6.QtWidgets import QGraphicsPolygonItem
 import geopandas as gpd
@@ -50,7 +50,7 @@ class MapRenderer:
         bounds = gdf.total_bounds
         min_x, min_y, max_x, max_y = bounds
         if min_x != max_x and min_y != max_y:
-            self.plot_widget.setXRange(min_x, max_x, padding=0.05)
-            self.plot_widget.setYRange(min_y, max_y, padding=0.05)
+            rect = QRectF(min_x, min_y, max_x - min_x, max_y - min_y)
+            self.plot_widget.getPlotItem().getViewBox().setRange(rect=rect, padding=0.05)
         else:
             self.plot_widget.enableAutoRange()

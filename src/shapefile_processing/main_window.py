@@ -1,11 +1,13 @@
 from os import PathLike
 
-from PyQt6.QtGui import QAction
+from PyQt6.QtCore import QEvent, QObject, QTimer
+from PyQt6.QtGui import QAction, QShowEvent
 from PyQt6.QtWidgets import (
     QDialog,
     QFileDialog,
     QMainWindow,
     QMessageBox,
+    QPushButton,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
@@ -39,6 +41,19 @@ class MainWindow(QMainWindow):
         self.shapefile_manager = ShapefileManager(self.plot_widget, self.map_renderer)
 
         self.setCentralWidget(self.plot_widget)
+
+        self.zoom_to_data_button = QPushButton('Zoom to Data', self.plot_widget.viewport())
+        self.zoom_to_data_button.setAutoDefault(False)
+        self.zoom_to_data_button.setDefault(False)
+        self.zoom_to_data_button.setEnabled(False)
+        self.zoom_to_data_button.clicked.connect(self.zoom_to_data)
+
+        # ensure button size 
+        self.zoom_to_data_button.adjustSize()
+
+        # enable eventFilter onplot widget viewport
+        # change button position on window resize
+        self.plot_widget.viewport().installEventFilter(self)
 
         self.create_menu()
         self.create_toolbar()
@@ -89,6 +104,44 @@ class MainWindow(QMainWindow):
         self.assign_ids_action.setEnabled(has_loaded_features)
         self.calculate_spatial_attributes_action.setEnabled(has_loaded_features)
         self.data_quality_action.setEnabled(has_loaded_features)
+        self.zoom_to_data_button.setEnabled(has_loaded_features)
+
+    # button is repositioned when the app first appears
+    # showEvent is triggered after window is shown
+    def showEvent(self, event: QShowEvent) -> None:
+        super().showEvent(event)
+        self._schedule_zoom_button_reposition()
+
+    # catches fullscreen/maximize transitions
+    # changeEvent is triggered when state/property changes
+    def changeEvent(self, event: QEvent) -> None:
+        super().changeEvent(event)
+        if event.type() == QEvent.Type.WindowStateChange:
+            self._schedule_zoom_button_reposition()
+    
+    # catches manual resize events
+    def eventFilter(self, obj: QObject | None, event: QEvent | None) -> bool:
+        if (
+            obj is self.plot_widget.viewport()
+            and event is not None
+            and event.type() == QEvent.Type.Resize
+        ):
+            self._reposition_zoom_button()
+        return super().eventFilter(obj, event)
+
+    def _schedule_zoom_button_reposition(self) -> None:
+        # run this on the next event loop cycle
+        # after Qt finishing processing current events and updating the layout
+        # this ensures the layout is ready
+        QTimer.singleShot(0, self._reposition_zoom_button)
+
+    def _reposition_zoom_button(self) -> None:
+        vb = self.plot_widget.getPlotItem().getViewBox()
+        scene_rect = vb.sceneBoundingRect()
+        br = self.plot_widget.mapFromScene(scene_rect.bottomRight())
+        btn = self.zoom_to_data_button
+        margin = 6
+        btn.move(br.x() - btn.width() - margin, br.y() - btn.height() - margin)
 
     def load_shapefile(self) -> None:
         file_name, _ = QFileDialog.getOpenFileName(
@@ -194,6 +247,14 @@ class MainWindow(QMainWindow):
             f'  - "invalid_geom" (True = invalid geometry)\n'
             f'  - "overlap"      (True = overlaps another polygon)',
         )
+
+    def zoom_to_data(self) -> None:
+        gdf = self.shapefile_manager.loaded_gdf
+        if gdf is None or gdf.empty:
+            QMessageBox.information(self, 'No Layer Loaded', 'Please load a shapefile first.')
+            return
+
+        self.map_renderer.set_plot_range(gdf)
 
     def export_shapefile(self) -> None:
         output_path, _ = QFileDialog.getSaveFileName(
