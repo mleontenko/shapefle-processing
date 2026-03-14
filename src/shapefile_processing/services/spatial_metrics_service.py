@@ -11,7 +11,7 @@ class SpatialMetricsService:
         gdf: gpd.GeoDataFrame,
         column_name: str = "area",
     ) -> gpd.GeoDataFrame:
-        """Calculates the area of each geometry
+        """Calculates the area of each geometry.
         
         Calculates the area of each geometry in the GeoDataFrame and adds it
         as a new column.
@@ -218,7 +218,7 @@ class SpatialMetricsService:
         return gdf
 
     def _count_polygon_vertices(self, geom) -> int | None:
-        """Counts the number of vertices for a geometry"""
+        """Counts the number of vertices for a geometry."""
         if geom is None or geom.is_empty:
             return None
 

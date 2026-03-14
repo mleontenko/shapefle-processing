@@ -1,3 +1,5 @@
+"""Rendering helpers for drawing geometries and labels on the map plot widget."""
+
 import geopandas as gpd
 import pyqtgraph as pg
 from PyQt6.QtCore import QPointF, QRectF
@@ -6,10 +8,22 @@ from PyQt6.QtWidgets import QGraphicsPolygonItem
 
 
 class MapRenderer:
+    """Render spatial layers and labels into a PyQtGraph plot."""
+
     def __init__(self, plot_widget: pg.PlotWidget) -> None:
+        """Initialize renderer with the target plot widget.
+        
+        Args:
+            plot_widget (pg.PlotWidget): The PyQtGraph plot widget to render on
+        """
         self.plot_widget = plot_widget
 
     def render_polygons(self, gdf: gpd.GeoDataFrame) -> None:
+        """Draw polygon and multipolygon geometries from a GeoDataFrame.
+        
+        Args:
+            gdf (gpd.GeoDataFrame): GeoDataFrame containing the geometries to render
+        """
         for geometry in gdf.geometry:
             if geometry is None or geometry.is_empty:
                 continue
@@ -34,6 +48,12 @@ class MapRenderer:
                 self.plot_widget.addItem(graphics_polygon)
 
     def render_labels(self, gdf: gpd.GeoDataFrame, column_name: str = "id") -> None:
+        """Draw text labels at feature centroids using the selected attribute.
+        
+        Args:
+            gdf (gpd.GeoDataFrame): GeoDataFrame containing the geometries to label
+            column_name (str): Name of the column to use for label text
+        """
         for _, row in gdf.iterrows():
             if row.geometry is None or row.geometry.is_empty:
                 continue
@@ -47,6 +67,14 @@ class MapRenderer:
             self.plot_widget.addItem(label)
 
     def set_plot_range(self, gdf: gpd.GeoDataFrame) -> None:
+        """Set the plot view to fit the bounds of the GeoDataFrame geometries.
+        
+        Fit the view to layer bounds, with fallback to auto-range for degenerate 
+        extents.
+
+        Args:
+            gdf (gpd.GeoDataFrame): GeoDataFrame containing the geometries to fit
+        """
         bounds = gdf.total_bounds
         min_x, min_y, max_x, max_y = bounds
         if min_x != max_x and min_y != max_y:
