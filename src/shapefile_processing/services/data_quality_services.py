@@ -8,7 +8,19 @@ class DataQualityServices:
         gdf: gpd.GeoDataFrame,
         column_name: str = 'invalid_geom',
     ) -> gpd.GeoDataFrame:
+        """
+        Detects invalid geometries in the GeoDataFrame and adds a boolean column indicating validity.
+
+        Args:
+            gdf (gpd.GeoDataFrame): GeoDataFrame containing the geometries to analyze
+            column_name (str): Name of the column to store the validity flags
+
+        Returns:
+            gpd.GeoDataFrame: GeoDataFrame with the new column containing validity flags
+        """
         gdf = gdf.copy()
+
+        # check for valid geometries and flip with ~ to mark invalid ones as True
         gdf[column_name] = ~gdf.geometry.is_valid
         gdf[column_name] = gdf[column_name].astype(bool)
         return gdf
@@ -18,6 +30,16 @@ class DataQualityServices:
         gdf: gpd.GeoDataFrame,
         column_name: str = 'overlap',
     ) -> gpd.GeoDataFrame:
+        """
+        Detects overlapping polygons in the GeoDataFrame and adds a boolean column indicating overlaps.
+
+        Args:
+            gdf (gpd.GeoDataFrame): GeoDataFrame containing the geometries to analyze
+            column_name (str): Name of the column to store the overlap flags
+
+        Returns:
+            gpd.GeoDataFrame: GeoDataFrame with the new column containing overlap flags
+        """
         # avoid mutating original dataframe, force clean index for reliable joining
         gdf = gdf.copy().reset_index(drop=True)
 
