@@ -1,3 +1,5 @@
+"""UI overlay button for quickly zooming the plot to loaded geometry extents."""
+
 from collections.abc import Callable
 from pathlib import Path
 
@@ -10,7 +12,12 @@ import pyqtgraph as pg
 
 
 class ZoomToDataButton(QObject):
+    """Overlay button that triggers zooming to data when clicked. 
+    It is positioned in the bottom-right corner of the plot and 
+    adjusts its position on window resize or state changes.
+    """
     def __init__(self, plot_widget: pg.PlotWidget, on_click: Callable[[], None]) -> None:
+        """Initializes the ZoomToDataButton."""
         super().__init__(plot_widget)
         self.plot_widget: pg.PlotWidget | None = plot_widget
         self.viewport = plot_widget.viewport()
@@ -28,16 +35,32 @@ class ZoomToDataButton(QObject):
         self.viewport.destroyed.connect(self._clear_references)
 
     def setEnabled(self, enabled: bool) -> None:
+        """Enables or disables the button.
+        
+        Args:
+            enabled (bool): True to enable the button, False to disable it
+                
+        Returns:
+            None
+        """
         self.button.setEnabled(enabled)
 
     def schedule_reposition(self) -> None:
-        # run this on the next event loop cycle
-        # after Qt finishing processing current events and updating the layout
-        # this ensures the layout is ready
+        """Schedules the button to be repositioned on the next event loop cycle
+        after Qt finishes processing current events and updating the layout.
+        This ensures layout is ready."""
         QTimer.singleShot(0, self.reposition)
 
     # catches manual resize events
     def eventFilter(self, obj: QObject | None, event: QEvent | None) -> bool:
+        """Listens for resize events on the viewport to reposition the button.
+        
+        Args:
+            obj (QObject | None): The object that received the event
+            
+        Returns:
+            bool: True if the event was handled, False otherwise   
+        """
         if (
             obj is self.viewport
             and event is not None
@@ -47,6 +70,7 @@ class ZoomToDataButton(QObject):
         return super().eventFilter(obj, event)
 
     def reposition(self) -> None:
+        """Repositions the button to the bottom-right corner of the viewport."""
         if self.plot_widget is None:
             return
         view_box = self.plot_widget.getPlotItem().getViewBox()
@@ -58,7 +82,7 @@ class ZoomToDataButton(QObject):
             bottom_right.y() - self.button.height() - margin,
         )
 
-    # cleanup to avoid errors if eventFilter() or reposition() runs during teardown
     def _clear_references(self) -> None:
+        """Clears references to the plot widget and viewport to avoid errors during teardown."""
         self.plot_widget = None
         self.viewport = None

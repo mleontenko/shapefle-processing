@@ -8,8 +8,7 @@ class DataQualityServices:
         gdf: gpd.GeoDataFrame,
         column_name: str = 'invalid_geom',
     ) -> gpd.GeoDataFrame:
-        """
-        Detects invalid geometries in the GeoDataFrame and adds a boolean column indicating validity.
+        """Detects invalid geometries in the GeoDataFrame and adds a boolean column indicating validity.
 
         Args:
             gdf (gpd.GeoDataFrame): GeoDataFrame containing the geometries to analyze
@@ -30,8 +29,7 @@ class DataQualityServices:
         gdf: gpd.GeoDataFrame,
         column_name: str = 'overlap',
     ) -> gpd.GeoDataFrame:
-        """
-        Detects overlapping polygons in the GeoDataFrame and adds a boolean column indicating overlaps.
+        """Detects overlapping polygons in the GeoDataFrame and adds a boolean column indicating overlaps.
 
         Args:
             gdf (gpd.GeoDataFrame): GeoDataFrame containing the geometries to analyze
@@ -74,8 +72,7 @@ class DataQualityServices:
         distance_threshold: float = 1.0,
         column_name: str = 'spatial_outlier',
     ) -> gpd.GeoDataFrame:
-        """
-        Identifies spatial outliers based on distance to nearest neighbor.
+        """Identifies spatial outliers based on distance to nearest neighbor.
 
         Args:
             gdf (gpd.GeoDataFrame): GeoDataFrame containing the geometries to analyze
