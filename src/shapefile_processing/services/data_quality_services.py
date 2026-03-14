@@ -1,8 +1,11 @@
+"""Data quality checks for geometry validity, overlaps, and spatial outliers."""
+
 import geopandas as gpd
 import pandas as pd
 
 
 class DataQualityServices:
+    """Provides methods for assessing the quality of spatial data, such as detecting invalid geometries, overlaps, and spatial outliers."""
     def detect_invalid_geometry(
         self,
         gdf: gpd.GeoDataFrame,

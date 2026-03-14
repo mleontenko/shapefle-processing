@@ -1,7 +1,10 @@
+"""Spatial metric calculations for geometry-based feature enrichment."""
+
 import geopandas as gpd
 
 
 class SpatialMetricsService:
+    """Provides methods for calculating spatial metrics such as area, perimeter, nearest neighbor distance, and vertex counts."""
     def calculate_area(
         self,
         gdf: gpd.GeoDataFrame,
@@ -44,6 +47,7 @@ class SpatialMetricsService:
         id_column_name: str = 'id',
     ) -> gpd.GeoDataFrame:
         """Calculates the distance to the nearest neighbor for each geometry and adds it as a new column.
+        
         Also adds a column with the identifier of the nearest neighbor.
 
         Args:
