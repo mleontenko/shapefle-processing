@@ -21,7 +21,16 @@ class ShapefileManager:
         spatial_metrics_service: SpatialMetricsService | None = None,
         data_quality_services: DataQualityServices | None = None,
     ) -> None:
-        """Initialize manager dependencies and set empty loaded layer state."""
+        """Initialize manager dependencies and set empty loaded layer state.
+
+        Args:
+            plot_widget (pg.PlotWidget): Target plot widget used for rendering.
+            map_renderer (MapRenderer | None): Optional map renderer dependency.
+            spatial_metrics_service (SpatialMetricsService | None): 
+            Optional spatial metrics service.
+            data_quality_services (DataQualityServices | None): Optional data 
+            quality service.
+        """
         self.plot_widget = plot_widget
         self.map_renderer = map_renderer or MapRenderer(plot_widget)
         self.spatial_metrics_service = (
@@ -31,7 +40,14 @@ class ShapefileManager:
         self.loaded_gdf: gpd.GeoDataFrame | None = None
 
     def load_and_render(self, file_name: str | PathLike[str]) -> bool:
-        """Load a shapefile and render features on the plot widget."""
+        """Load a shapefile and render features on the plot widget.
+
+        Args:
+            file_name (str | PathLike[str]): Input shapefile path.
+
+        Returns:
+            bool: True when the layer has features and was rendered, False when empty.
+        """
         gdf = gpd.read_file(file_name)
         self.loaded_gdf = gdf
 
@@ -45,14 +61,23 @@ class ShapefileManager:
         return True
 
     def get_attributes(self) -> pd.DataFrame | None:
-        """Return non-geometry attributes for the loaded layer, if available."""
+        """Return non-geometry attributes for the loaded layer, if available.
+
+        Returns:
+            pd.DataFrame | None: Attribute table without geometry, or None if 
+            no layer is loaded.
+        """
         if self.loaded_gdf is None:
             return None
 
         return self.loaded_gdf.drop(columns="geometry", errors="ignore")
 
     def assign_ids(self) -> int | None:
-        """Assign sequential BLD-style IDs and render labels for loaded features."""
+        """Assign sequential BLD-style IDs and render labels for loaded features.
+
+        Returns:
+            int | None: Number of updated features, or None if no layer is loaded.
+        """
         if self.loaded_gdf is None:
             return None
 
@@ -67,7 +92,11 @@ class ShapefileManager:
         return feature_count
 
     def calculate_area(self) -> int | None:
-        """Calculate and store feature area for the loaded layer."""
+        """Calculate and store feature area for the loaded layer.
+
+        Returns:
+            int | None: Number of updated features, or None if no layer is loaded.
+        """
         if self.loaded_gdf is None:
             return None
 
@@ -75,7 +104,11 @@ class ShapefileManager:
         return len(self.loaded_gdf)
 
     def calculate_perimeter(self) -> int | None:
-        """Calculate and store feature perimeter for the loaded layer."""
+        """Calculate and store feature perimeter for the loaded layer.
+
+        Returns:
+            int | None: Number of updated features, or None if no layer is loaded.
+        """
         if self.loaded_gdf is None:
             return None
 
@@ -85,7 +118,11 @@ class ShapefileManager:
         return len(self.loaded_gdf)
 
     def calculate_distance_to_nearest_neighbor(self) -> int | None:
-        """Calculate nearest-neighbor distance and nearest ID for each feature."""
+        """Calculate nearest-neighbor distance and nearest ID for each feature.
+
+        Returns:
+            int | None: Number of updated features, or None if no layer is loaded.
+        """
         if self.loaded_gdf is None:
             return None
 
@@ -97,7 +134,14 @@ class ShapefileManager:
         return len(self.loaded_gdf)
 
     def calculate_number_of_neighbors(self, radius: float = 1.0) -> int | None:
-        """Count neighbors within the provided radius for each feature."""
+        """Count neighbors within the provided radius for each feature.
+
+        Args:
+            radius (float): Radius used to count neighboring features.
+
+        Returns:
+            int | None: Number of updated features, or None if no layer is loaded.
+        """
         if self.loaded_gdf is None:
             return None
 
@@ -108,7 +152,11 @@ class ShapefileManager:
         return len(self.loaded_gdf)
 
     def calculate_centroid_coordinates(self) -> int | None:
-        """Calculate and store centroid X/Y coordinates for each feature."""
+        """Calculate and store centroid X/Y coordinates for each feature.
+
+        Returns:
+            int | None: Number of updated features, or None if no layer is loaded.
+        """
         if self.loaded_gdf is None:
             return None
 
@@ -118,7 +166,11 @@ class ShapefileManager:
         return len(self.loaded_gdf)
 
     def calculate_number_of_vertices(self) -> int | None:
-        """Calculate and store polygon vertex counts for each feature."""
+        """Calculate and store polygon vertex counts for each feature.
+
+        Returns:
+            int | None: Number of updated features, or None if no layer is loaded.
+        """
         if self.loaded_gdf is None:
             return None
 
@@ -128,7 +180,12 @@ class ShapefileManager:
         return len(self.loaded_gdf)
 
     def detect_invalid_geometry(self) -> tuple[int, int] | None:
-        """Mark invalid geometries and return invalid and total feature counts."""
+        """Mark invalid geometries and return invalid and total feature counts.
+
+        Returns:
+            tuple[int, int] | None: Invalid count and total count, or None if no layer
+            is loaded.
+        """
         if self.loaded_gdf is None:
             return None
 
@@ -140,7 +197,12 @@ class ShapefileManager:
         return invalid_count, total_count
 
     def detect_overlapping_polygons(self) -> tuple[int, int] | None:
-        """Mark overlapping polygons and return overlap and total feature counts."""
+        """Mark overlapping polygons and return overlap and total feature counts.
+
+        Returns:
+            tuple[int, int] | None: Overlap count and total count, or None if no layer
+            is loaded.
+        """
         if self.loaded_gdf is None:
             return None
 
@@ -154,7 +216,16 @@ class ShapefileManager:
     def detect_spatial_outliers(
         self, distance_threshold: float = 1.0
     ) -> tuple[int, int] | None:
-        """Mark spatial outliers and return outlier and total feature counts."""
+        """Mark spatial outliers and return outlier and total feature counts.
+
+        Args:
+            distance_threshold (float): Edge-to-edge distance threshold for 
+            outlier classification.
+
+        Returns:
+            tuple[int, int] | None: Outlier count and total count, or None
+            if no layer is loaded.
+        """
         if self.loaded_gdf is None:
             return None
 
@@ -167,7 +238,14 @@ class ShapefileManager:
         return outlier_count, total_count
 
     def export_shapefile(self, output_path: str | PathLike[str]) -> bool:
-        """Export the current layer to an ESRI Shapefile."""
+        """Export the current layer to an ESRI Shapefile.
+
+        Args:
+            output_path (str | PathLike[str]): Output shapefile path.
+
+        Returns:
+            bool: True if export succeeded, False if no layer is loaded.
+        """
         if self.loaded_gdf is None:
             return False
 
