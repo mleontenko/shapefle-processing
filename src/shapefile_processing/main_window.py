@@ -98,15 +98,15 @@ class MainWindow(QMainWindow):
 
     # button is repositioned when the app first appears
     # showEvent is triggered after window is shown
-    def showEvent(self, event: QShowEvent) -> None:
+    def showEvent(self, event: QShowEvent | None) -> None:
         super().showEvent(event)
         self.zoom_to_data_overlay.schedule_reposition()
 
     # catches fullscreen/maximize transitions
     # changeEvent is triggered when state/property changes
-    def changeEvent(self, event: QEvent) -> None:
+    def changeEvent(self, event: QEvent | None) -> None:
         super().changeEvent(event)
-        if event.type() == QEvent.Type.WindowStateChange:
+        if event is not None and event.type() == QEvent.Type.WindowStateChange:
             self.zoom_to_data_overlay.schedule_reposition()
 
     def load_shapefile(self) -> None:
