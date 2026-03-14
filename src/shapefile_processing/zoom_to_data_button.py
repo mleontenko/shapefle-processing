@@ -65,6 +65,7 @@ class ZoomToDataButton(QObject):
 
         Args:
             obj (QObject | None): The object that received the event
+            event (QEvent | None): The event object to inspect
 
         Returns:
             bool: True if the event was handled, False otherwise

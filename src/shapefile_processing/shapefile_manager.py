@@ -1,3 +1,5 @@
+"""High-level manager for loading, enriching, validating, and exporting shapefiles."""
+
 from os import PathLike
 
 import geopandas as gpd
@@ -10,6 +12,8 @@ from shapefile_processing.services.spatial_metrics_service import SpatialMetrics
 
 
 class ShapefileManager:
+    """Coordinates map rendering and geospatial service operations for the UI."""
+
     def __init__(
         self,
         plot_widget: pg.PlotWidget,
@@ -17,6 +21,7 @@ class ShapefileManager:
         spatial_metrics_service: SpatialMetricsService | None = None,
         data_quality_services: DataQualityServices | None = None,
     ) -> None:
+        """Initialize manager dependencies and set empty loaded layer state."""
         self.plot_widget = plot_widget
         self.map_renderer = map_renderer or MapRenderer(plot_widget)
         self.spatial_metrics_service = (
@@ -26,6 +31,7 @@ class ShapefileManager:
         self.loaded_gdf: gpd.GeoDataFrame | None = None
 
     def load_and_render(self, file_name: str | PathLike[str]) -> bool:
+        """Load a shapefile and render features on the plot widget."""
         gdf = gpd.read_file(file_name)
         self.loaded_gdf = gdf
 
@@ -39,12 +45,14 @@ class ShapefileManager:
         return True
 
     def get_attributes(self) -> pd.DataFrame | None:
+        """Return non-geometry attributes for the loaded layer, if available."""
         if self.loaded_gdf is None:
             return None
 
         return self.loaded_gdf.drop(columns="geometry", errors="ignore")
 
     def assign_ids(self) -> int | None:
+        """Assign sequential BLD-style IDs and render labels for loaded features."""
         if self.loaded_gdf is None:
             return None
 
@@ -59,6 +67,7 @@ class ShapefileManager:
         return feature_count
 
     def calculate_area(self) -> int | None:
+        """Calculate and store feature area for the loaded layer."""
         if self.loaded_gdf is None:
             return None
 
@@ -66,6 +75,7 @@ class ShapefileManager:
         return len(self.loaded_gdf)
 
     def calculate_perimeter(self) -> int | None:
+        """Calculate and store feature perimeter for the loaded layer."""
         if self.loaded_gdf is None:
             return None
 
@@ -75,6 +85,7 @@ class ShapefileManager:
         return len(self.loaded_gdf)
 
     def calculate_distance_to_nearest_neighbor(self) -> int | None:
+        """Calculate nearest-neighbor distance and nearest ID for each feature."""
         if self.loaded_gdf is None:
             return None
 
@@ -86,6 +97,7 @@ class ShapefileManager:
         return len(self.loaded_gdf)
 
     def calculate_number_of_neighbors(self, radius: float = 1.0) -> int | None:
+        """Count neighbors within the provided radius for each feature."""
         if self.loaded_gdf is None:
             return None
 
@@ -96,6 +108,7 @@ class ShapefileManager:
         return len(self.loaded_gdf)
 
     def calculate_centroid_coordinates(self) -> int | None:
+        """Calculate and store centroid X/Y coordinates for each feature."""
         if self.loaded_gdf is None:
             return None
 
@@ -105,6 +118,7 @@ class ShapefileManager:
         return len(self.loaded_gdf)
 
     def calculate_number_of_vertices(self) -> int | None:
+        """Calculate and store polygon vertex counts for each feature."""
         if self.loaded_gdf is None:
             return None
 
@@ -114,6 +128,7 @@ class ShapefileManager:
         return len(self.loaded_gdf)
 
     def detect_invalid_geometry(self) -> tuple[int, int] | None:
+        """Mark invalid geometries and return invalid and total feature counts."""
         if self.loaded_gdf is None:
             return None
 
@@ -125,6 +140,7 @@ class ShapefileManager:
         return invalid_count, total_count
 
     def detect_overlapping_polygons(self) -> tuple[int, int] | None:
+        """Mark overlapping polygons and return overlap and total feature counts."""
         if self.loaded_gdf is None:
             return None
 
@@ -138,6 +154,7 @@ class ShapefileManager:
     def detect_spatial_outliers(
         self, distance_threshold: float = 1.0
     ) -> tuple[int, int] | None:
+        """Mark spatial outliers and return outlier and total feature counts."""
         if self.loaded_gdf is None:
             return None
 
@@ -150,6 +167,7 @@ class ShapefileManager:
         return outlier_count, total_count
 
     def export_shapefile(self, output_path: str | PathLike[str]) -> bool:
+        """Export the current layer to an ESRI Shapefile."""
         if self.loaded_gdf is None:
             return False
 
