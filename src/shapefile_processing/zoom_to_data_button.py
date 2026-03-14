@@ -7,22 +7,25 @@ from PyQt6.QtCore import QEvent, QObject, QSize, QTimer
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QPushButton
 
-_ASSETS_DIR = Path(__file__).parent / 'assets'
+_ASSETS_DIR = Path(__file__).parent / "assets"
 import pyqtgraph as pg
 
 
 class ZoomToDataButton(QObject):
     """Overlay button that triggers zooming to data when clicked.
-    It is positioned in the bottom-right corner of the plot and 
+    It is positioned in the bottom-right corner of the plot and
     adjusts its position on window resize or state changes.
     """
-    def __init__(self, plot_widget: pg.PlotWidget, on_click: Callable[[], None]) -> None:
+
+    def __init__(
+        self, plot_widget: pg.PlotWidget, on_click: Callable[[], None]
+    ) -> None:
         """Initializes the ZoomToDataButton."""
         super().__init__(plot_widget)
         self.plot_widget: pg.PlotWidget | None = plot_widget
         self.viewport = plot_widget.viewport()
-        self.button = QPushButton('Zoom to Data', self.viewport)
-        self.button.setIcon(QIcon(str(_ASSETS_DIR / 'magnifying-glass.svg')))
+        self.button = QPushButton("Zoom to Data", self.viewport)
+        self.button.setIcon(QIcon(str(_ASSETS_DIR / "magnifying-glass.svg")))
         self.button.setIconSize(QSize(16, 16))
         self.button.setAutoDefault(False)
         self.button.setDefault(False)
@@ -36,10 +39,10 @@ class ZoomToDataButton(QObject):
 
     def setEnabled(self, enabled: bool) -> None:
         """Enables or disables the button.
-        
+
         Args:
             enabled (bool): True to enable the button, False to disable it
-                
+
         Returns:
             None
         """
@@ -55,12 +58,12 @@ class ZoomToDataButton(QObject):
     # catches manual resize events
     def eventFilter(self, obj: QObject | None, event: QEvent | None) -> bool:
         """Listens for resize events on the viewport to reposition the button.
-        
+
         Args:
             obj (QObject | None): The object that received the event
-            
+
         Returns:
-            bool: True if the event was handled, False otherwise   
+            bool: True if the event was handled, False otherwise
         """
         if (
             obj is self.viewport

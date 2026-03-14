@@ -14,9 +14,9 @@ class MapRenderer:
             if geometry is None or geometry.is_empty:
                 continue
 
-            if geometry.geom_type == 'Polygon':
+            if geometry.geom_type == "Polygon":
                 polygons = [geometry]
-            elif geometry.geom_type == 'MultiPolygon':
+            elif geometry.geom_type == "MultiPolygon":
                 polygons = list(geometry.geoms)
             else:
                 continue
@@ -33,7 +33,7 @@ class MapRenderer:
                 graphics_polygon.setBrush(QBrush(QColor(70, 95, 130, 150)))
                 self.plot_widget.addItem(graphics_polygon)
 
-    def render_labels(self, gdf: gpd.GeoDataFrame, column_name: str = 'id') -> None:
+    def render_labels(self, gdf: gpd.GeoDataFrame, column_name: str = "id") -> None:
         for _, row in gdf.iterrows():
             if row.geometry is None or row.geometry.is_empty:
                 continue
@@ -51,6 +51,8 @@ class MapRenderer:
         min_x, min_y, max_x, max_y = bounds
         if min_x != max_x and min_y != max_y:
             rect = QRectF(min_x, min_y, max_x - min_x, max_y - min_y)
-            self.plot_widget.getPlotItem().getViewBox().setRange(rect=rect, padding=0.05)
+            self.plot_widget.getPlotItem().getViewBox().setRange(
+                rect=rect, padding=0.05
+            )
         else:
             self.plot_widget.enableAutoRange()

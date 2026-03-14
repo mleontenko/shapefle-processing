@@ -31,17 +31,17 @@ class FakeMapRenderer:
 class ShapefileManagerTests(unittest.TestCase):
     def test_load_and_render_polygon_shapefile_success(self):
         with tempfile.TemporaryDirectory() as temp_dir:
-            shp_path = Path(temp_dir) / 'polygons.shp'
+            shp_path = Path(temp_dir) / "polygons.shp"
 
             gdf = gpd.GeoDataFrame(
-                {'name': ['A', 'B']},
+                {"name": ["A", "B"]},
                 geometry=[
                     Polygon([(0, 0), (1, 0), (1, 1), (0, 0)]),
                     Polygon([(2, 2), (3, 2), (3, 3), (2, 2)]),
                 ],
-                crs='EPSG:4326',
+                crs="EPSG:4326",
             )
-            gdf['name'] = gdf['name'].astype('object')
+            gdf["name"] = gdf["name"].astype("object")
             gdf.to_file(shp_path)
 
             fake_plot = FakePlotWidget()
@@ -58,5 +58,5 @@ class ShapefileManagerTests(unittest.TestCase):
             self.assertEqual(len(manager.loaded_gdf), 2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

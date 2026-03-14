@@ -16,16 +16,16 @@ class DataQualityServicesTests(unittest.TestCase):
         invalid_polygon = Polygon([(0, 0), (2, 2), (0, 2), (2, 0), (0, 0)])
 
         gdf = gpd.GeoDataFrame(
-            {'name': ['valid', 'invalid']},
+            {"name": ["valid", "invalid"]},
             geometry=[valid_polygon, invalid_polygon],
-            crs='EPSG:25884',
+            crs="EPSG:25884",
         )
 
         result = self.service.detect_invalid_geometry(gdf)
 
-        self.assertIn('invalid_geom', result.columns)
-        self.assertEqual([False, True], result['invalid_geom'].tolist())
-        self.assertNotIn('invalid_geom', gdf.columns)
+        self.assertIn("invalid_geom", result.columns)
+        self.assertEqual([False, True], result["invalid_geom"].tolist())
+        self.assertNotIn("invalid_geom", gdf.columns)
 
     def test_detect_overlapping_polygons_marks_true_for_area_overlap(self) -> None:
         # a and b overlap, c does not
@@ -34,16 +34,16 @@ class DataQualityServicesTests(unittest.TestCase):
         polygon_c = Polygon([(5, 5), (7, 5), (7, 7), (5, 5)])
 
         gdf = gpd.GeoDataFrame(
-            {'id': [1, 2, 3]},
+            {"id": [1, 2, 3]},
             geometry=[polygon_a, polygon_b, polygon_c],
-            crs='EPSG:25884',
+            crs="EPSG:25884",
         )
 
         result = self.service.detect_overlapping_polygons(gdf)
 
-        self.assertIn('overlap', result.columns)
-        self.assertEqual([True, True, False], result['overlap'].tolist())
-        self.assertNotIn('overlap', gdf.columns)
+        self.assertIn("overlap", result.columns)
+        self.assertEqual([True, True, False], result["overlap"].tolist())
+        self.assertNotIn("overlap", gdf.columns)
 
     def test_detect_overlapping_polygons_excludes_boundary_touch(self) -> None:
         # polygons share an edge at x=2 but have no area overlap
@@ -51,14 +51,14 @@ class DataQualityServicesTests(unittest.TestCase):
         polygon_right = Polygon([(2, 0), (4, 0), (4, 2), (2, 0)])
 
         gdf = gpd.GeoDataFrame(
-            {'id': [1, 2]},
+            {"id": [1, 2]},
             geometry=[polygon_left, polygon_right],
-            crs='EPSG:25884',
+            crs="EPSG:25884",
         )
 
         result = self.service.detect_overlapping_polygons(gdf)
 
-        self.assertEqual([False, False], result['overlap'].tolist())
+        self.assertEqual([False, False], result["overlap"].tolist())
 
     def test_detect_overlapping_polygons_detects_containment(self) -> None:
         # inner polygon is completely within outer polygon
@@ -66,14 +66,14 @@ class DataQualityServicesTests(unittest.TestCase):
         inner_polygon = Polygon([(2, 2), (3, 2), (3, 3), (2, 2)])
 
         gdf = gpd.GeoDataFrame(
-            {'id': [1, 2]},
+            {"id": [1, 2]},
             geometry=[outer_polygon, inner_polygon],
-            crs='EPSG:25884',
+            crs="EPSG:25884",
         )
 
         result = self.service.detect_overlapping_polygons(gdf)
 
-        self.assertEqual([True, True], result['overlap'].tolist())
+        self.assertEqual([True, True], result["overlap"].tolist())
 
     def test_detect_spatial_outliers_uses_edge_to_edge_distance(self) -> None:
         # nearest edge distances: a<->b = 1, c<->b = 7
@@ -82,25 +82,25 @@ class DataQualityServicesTests(unittest.TestCase):
         polygon_c = Polygon([(10, 0), (11, 0), (11, 1), (10, 0)])
 
         gdf = gpd.GeoDataFrame(
-            {'id': [1, 2, 3]},
+            {"id": [1, 2, 3]},
             geometry=[polygon_a, polygon_b, polygon_c],
-            crs='EPSG:25884',
+            crs="EPSG:25884",
         )
 
         result = self.service.detect_spatial_outliers(gdf, distance_threshold=1.5)
 
-        self.assertIn('spatial_outlier', result.columns)
-        self.assertEqual([False, False, True], result['spatial_outlier'].tolist())
-        self.assertNotIn('spatial_outlier', gdf.columns)
+        self.assertIn("spatial_outlier", result.columns)
+        self.assertEqual([False, False, True], result["spatial_outlier"].tolist())
+        self.assertNotIn("spatial_outlier", gdf.columns)
 
     def test_detect_spatial_outliers_single_feature_is_outlier(self) -> None:
         polygon = Polygon([(0, 0), (1, 0), (1, 1), (0, 0)])
-        gdf = gpd.GeoDataFrame({'id': [1]}, geometry=[polygon], crs='EPSG:25884')
+        gdf = gpd.GeoDataFrame({"id": [1]}, geometry=[polygon], crs="EPSG:25884")
 
         result = self.service.detect_spatial_outliers(gdf, distance_threshold=1.0)
 
-        self.assertEqual([True], result['spatial_outlier'].tolist())
+        self.assertEqual([True], result["spatial_outlier"].tolist())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
