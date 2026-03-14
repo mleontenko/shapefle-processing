@@ -52,7 +52,8 @@ class ShapefileManager:
         self.loaded_gdf["id"] = [
             f"BLD_{index}" for index in range(1, feature_count + 1)
         ]
-        # convert 'id' column to object type to ensure compatibility with shapefile export
+        # convert 'id' column to object type to ensure compatibility 
+        #with shapefile export
         self.loaded_gdf["id"] = self.loaded_gdf["id"].astype("object")
         self.map_renderer.render_labels(self.loaded_gdf, column_name="id")
         return feature_count

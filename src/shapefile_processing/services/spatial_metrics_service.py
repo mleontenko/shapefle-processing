@@ -4,14 +4,17 @@ import geopandas as gpd
 
 
 class SpatialMetricsService:
-    """Provides methods for calculating spatial metrics such as area, perimeter, nearest neighbor distance, and vertex counts."""
+    """Provides methods for calculating spatial metrics such as area, perimeter,
+    nearest neighbor distance, and vertex counts.
+    """
 
     def calculate_area(
         self,
         gdf: gpd.GeoDataFrame,
         column_name: str = "area",
     ) -> gpd.GeoDataFrame:
-        """Calculates the area of each geometry in the GeoDataFrame and adds it as a new column.
+        """Calculates the area of each geometry in the GeoDataFrame and adds it
+        as a new column.
 
         Args:
             gdf (gpd.GeoDataFrame): GeoDataFrame containing the geometries to analyze
@@ -28,14 +31,16 @@ class SpatialMetricsService:
         gdf: gpd.GeoDataFrame,
         column_name: str = "perimeter",
     ) -> gpd.GeoDataFrame:
-        """Calculates the perimeter of each geometry in the GeoDataFrame and adds it as a new column.
+        """Calculates the perimeter of each geometry in the GeoDataFrame and adds
+        it as a new column.
 
         Args:
             gdf (gpd.GeoDataFrame): GeoDataFrame containing the geometries to analyze
             column_name (str): Name of the column to store the perimeter values
 
         Returns:
-            gpd.GeoDataFrame: GeoDataFrame with the new column containing perimeter values
+            gpd.GeoDataFrame: GeoDataFrame with the new column containing perimeter 
+            values
         """
         gdf[column_name] = gdf.geometry.length
         return gdf
@@ -47,18 +52,20 @@ class SpatialMetricsService:
         nearest_column_name: str = "nearest",
         id_column_name: str = "id",
     ) -> gpd.GeoDataFrame:
-        """Calculates the distance to the nearest neighbor for each geometry and adds it as a new column.
+        """Calculates the distance to the nearest neighbor for each geometry and adds
+        it as a new column.
 
         Also adds a column with the identifier of the nearest neighbor.
 
         Args:
             gdf (gpd.GeoDataFrame): GeoDataFrame containing the geometries to analyze
-            column_name (str): Name of the column to store the nearest neighbor distances
-            nearest_column_name (str): Name of the column to store the nearest neighbor identifiers
-            id_column_name (str): Name of the identifier column in the input GeoDataFrame
+            column_name (str): Name of column to store nearest neighbor distances
+            nearest_column_name (str): Name of column to store nearest neighbor id
+            id_column_name (str): Name of identifier column in the input gdf
 
         Returns:
-            gpd.GeoDataFrame: GeoDataFrame with the new columns containing nearest neighbor distances and identifiers
+            gpd.GeoDataFrame: GeoDataFrame with the new columns containing nearest 
+            neighbor distances and identifiers
         """
         left = gdf.reset_index(drop=True)
         right = left.copy()
@@ -103,7 +110,8 @@ class SpatialMetricsService:
         nearest_id_series = nearest_per_feature[right_id_column_name]
 
         # Align computed values back to the original row order in `gdf`.
-        # 'nearest_per_feature' is indexed by left feature index; reindex fills by matching index.
+        # 'nearest_per_feature' is indexed by left feature index; reindex fills 
+        #by matching index.
         row_index = gdf.reset_index(drop=True).index
         # Write nearest neighbor identifier (ID or fallback index).
         gdf[nearest_column_name] = nearest_id_series.reindex(row_index).values
@@ -117,7 +125,8 @@ class SpatialMetricsService:
         radius: float = 1.0,
         column_name: str = "num_neighb",
     ) -> gpd.GeoDataFrame:
-        """Calculates the number of neighbors within a specified radius for each geometry and adds it as a new column.
+        """Calculates the number of neighbors within a specified radius for each
+        geometry and adds it as a new column.
 
         Args:
             gdf (gpd.GeoDataFrame): GeoDataFrame containing the geometries to analyze
@@ -125,7 +134,8 @@ class SpatialMetricsService:
             column_name (str): Name of the column to store the neighbor counts
 
         Returns:
-            gpd.GeoDataFrame: GeoDataFrame with the new column containing neighbor counts
+            gpd.GeoDataFrame: GeoDataFrame with the new column containing 
+            neighbor counts
         """
         left = gdf.reset_index(drop=True)
         right = left.copy()
@@ -163,7 +173,8 @@ class SpatialMetricsService:
         x_column: str = "centroid_x",
         y_column: str = "centroid_y",
     ) -> gpd.GeoDataFrame:
-        """Calculates the centroid coordinates of each geometry and adds them as new columns.
+        """Calculates the centroid coordinates of each geometry and adds them as
+        new columns.
 
         Args:
             gdf (gpd.GeoDataFrame): GeoDataFrame containing the geometries to analyze
@@ -171,7 +182,8 @@ class SpatialMetricsService:
             y_column (str): Name of the column to store the centroid Y coordinates
 
         Returns:
-            gpd.GeoDataFrame: GeoDataFrame with the new columns containing centroid coordinates
+            gpd.GeoDataFrame: GeoDataFrame with the new columns containing 
+            centroid coordinates
         """
         gdf[x_column] = gdf.geometry.centroid.x
         gdf[y_column] = gdf.geometry.centroid.y
@@ -182,7 +194,8 @@ class SpatialMetricsService:
         gdf: gpd.GeoDataFrame,
         column_name: str = "num_vertices",
     ) -> gpd.GeoDataFrame:
-        """Counts the number of vertices for each geometry, excluding the closing point for polygons.
+        """Counts the number of vertices for each geometry, excluding the
+        closing point for polygons.
 
         Args:
             gdf (gpd.GeoDataFrame): GeoDataFrame containing the geometries to analyze
@@ -195,7 +208,9 @@ class SpatialMetricsService:
         return gdf
 
     def _count_polygon_vertices(self, geom) -> int | None:
-        """Counts the number of vertices for a geometry, excluding the closing point for polygons."""
+        """Counts the number of vertices for a geometry, excluding the closing
+        point for polygons.
+        """
         if geom is None or geom.is_empty:
             return None
 

@@ -5,14 +5,17 @@ import pandas as pd
 
 
 class DataQualityServices:
-    """Provides methods for assessing the quality of spatial data, such as detecting invalid geometries, overlaps, and spatial outliers."""
+    """Provides methods for assessing the quality of spatial data, such as detecting
+    invalid geometries, overlaps, and spatial outliers.
+    """
 
     def detect_invalid_geometry(
         self,
         gdf: gpd.GeoDataFrame,
         column_name: str = "invalid_geom",
     ) -> gpd.GeoDataFrame:
-        """Detects invalid geometries in the GeoDataFrame and adds a boolean column indicating validity.
+        """Detects invalid geometries in the GeoDataFrame and adds a boolean column
+        indicating validity.
 
         Args:
             gdf (gpd.GeoDataFrame): GeoDataFrame containing the geometries to analyze
@@ -33,7 +36,8 @@ class DataQualityServices:
         gdf: gpd.GeoDataFrame,
         column_name: str = "overlap",
     ) -> gpd.GeoDataFrame:
-        """Detects overlapping polygons in the GeoDataFrame and adds a boolean column indicating overlaps.
+        """Detects overlapping polygons in the GeoDataFrame and adds a boolean column
+        indicating overlaps.
 
         Args:
             gdf (gpd.GeoDataFrame): GeoDataFrame containing the geometries to analyze
@@ -47,7 +51,8 @@ class DataQualityServices:
 
         # Self-join: keep rows where geometries intersect in area
         # add suffix because of duplicate column names from join
-        # predicate='overlaps' does not include cases where one polygon is completely within another
+        # predicate='overlaps' does not include cases where one polygon is 
+        # completely within another
         joined = gpd.sjoin(
             gdf,
             gdf,
@@ -131,7 +136,8 @@ class DataQualityServices:
         # reindex to original gdf order and assign distances
         nearest_distances = nearest_per_feature[distance_col].reindex(gdf.index)
 
-        # classify as outlier if nearest neighbor is farther than threshold or if no neighbors exist (NaN distance)
+        # classify as outlier if nearest neighbor is farther than threshold or if no 
+        # neighbors exist (NaN distance)
         gdf[column_name] = nearest_distances.isna() | (
             nearest_distances > distance_threshold
         )

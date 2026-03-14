@@ -52,7 +52,8 @@ class MainWindow(QMainWindow):
 
     def create_menu(self) -> None:
         menu_bar = self.menuBar()
-        # satisfy type checker that menu_bar is not None, since QMainWindow.menuBar() should always return a valid QMenuBar instance
+        # satisfy type checker that menu_bar is not None, since QMainWindow.menuBar()
+        # should always return a valid QMenuBar instance
         assert menu_bar is not None
         file_menu = menu_bar.addMenu("File")
         view_menu = menu_bar.addMenu("View")
@@ -203,7 +204,11 @@ class MainWindow(QMainWindow):
         QMessageBox.information(
             self,
             "Spatial Attributes Calculated",
-            f"Calculated area, perimeter, nearest neighbour distance, number of neighbors, centroid coordinates, and number of vertices for {updated_count} features.",
+            (
+                "Calculated area, perimeter, nearest neighbour distance, number of "
+                "neighbors, centroid coordinates, and number of vertices for "
+                f"{updated_count} features."
+            ),
         )
 
     def data_quality_checks(self) -> None:

@@ -3,12 +3,12 @@
 from collections.abc import Callable
 from pathlib import Path
 
+import pyqtgraph as pg
 from PyQt6.QtCore import QEvent, QObject, QSize, QTimer
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QPushButton
 
 _ASSETS_DIR = Path(__file__).parent / "assets"
-import pyqtgraph as pg
 
 
 class ZoomToDataButton(QObject):
@@ -87,6 +87,8 @@ class ZoomToDataButton(QObject):
         )
 
     def _clear_references(self) -> None:
-        """Clears references to the plot widget and viewport to avoid errors during teardown."""
+        """Clears references to the plot widget and viewport to avoid errors
+        during teardown.
+        """
         self.plot_widget = None
         self.viewport = None
