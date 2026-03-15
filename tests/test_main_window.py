@@ -18,7 +18,7 @@ class MainWindowTests(unittest.TestCase):
         self.app.processEvents()
 
         self.assertTrue(window.isVisible())
-        self.assertEqual(window.windowTitle(), "Shapefile Loader")
+        self.assertEqual(window.windowTitle(), "Shapefile Processing")
         self.assertIsNotNone(window.centralWidget())
 
         window.close()

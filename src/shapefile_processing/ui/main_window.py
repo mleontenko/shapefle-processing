@@ -28,7 +28,7 @@ class MainWindow(QMainWindow):
     def __init__(self) -> None:
         """Initialize widgets, services, and menu/toolbar actions."""
         super().__init__()
-        self.setWindowTitle("Shapefile Loader")
+        self.setWindowTitle("Shapefile Processing")
         self.setGeometry(100, 100, 800, 600)
 
         self.plot_widget = pg.PlotWidget()
