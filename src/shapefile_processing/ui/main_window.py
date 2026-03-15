@@ -10,12 +10,10 @@ from PyQt6.QtWidgets import (
     QFileDialog,
     QMainWindow,
     QMessageBox,
-    QTableWidget,
-    QTableWidgetItem,
-    QVBoxLayout,
 )
 
 from shapefile_processing.shapefile_manager import ShapefileManager
+from shapefile_processing.ui.attribute_table_dialog import AttributeTableDialog
 from shapefile_processing.ui.map_renderer import MapRenderer
 from shapefile_processing.ui.parameters_dialog import ParametersDialog
 from shapefile_processing.ui.zoom_to_data_button import ZoomToDataButton
@@ -205,26 +203,7 @@ class MainWindow(QMainWindow):
             )
             return
 
-        table_dialog = QDialog(self)
-        table_dialog.setWindowTitle("Attribute Table")
-        table_dialog.resize(900, 500)
-
-        layout = QVBoxLayout(table_dialog)
-        table_widget = QTableWidget(table_dialog)
-        layout.addWidget(table_widget)
-
-        table_widget.setRowCount(len(attributes))
-        table_widget.setColumnCount(len(attributes.columns))
-        table_widget.setHorizontalHeaderLabels([str(col) for col in attributes.columns])
-
-        for row_index, (_, row_data) in enumerate(attributes.iterrows()):
-            for col_index, value in enumerate(row_data):
-                display_value = "" if value is None else str(value)
-                table_widget.setItem(
-                    row_index, col_index, QTableWidgetItem(display_value)
-                )
-
-        table_widget.resizeColumnsToContents()
+        table_dialog = AttributeTableDialog(attributes, parent=self)
         table_dialog.exec()
 
     def assign_ids(self) -> None:
