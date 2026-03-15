@@ -74,28 +74,16 @@ class SpatialMetricsService:
         left = gdf.reset_index(drop=True)
         right = left.copy()
 
-        try:
-            nearest = gpd.sjoin_nearest(
-                left,
-                right,
-                how="left",
-                distance_col=column_name,
-                lsuffix="left",
-                rsuffix="right",
-                max_distance=None,
-                exclusive=True,
-            )
-        except TypeError:
-            nearest = gpd.sjoin_nearest(
-                left,
-                right,
-                how="left",
-                distance_col=column_name,
-                lsuffix="left",
-                rsuffix="right",
-                max_distance=None,
-            )
-            nearest = nearest[nearest.index != nearest["index_right"]]
+        nearest = gpd.sjoin_nearest(
+            left,
+            right,
+            how="left",
+            distance_col=column_name,
+            lsuffix="left",
+            rsuffix="right",
+            max_distance=None,
+            exclusive=True,
+        )
 
         if nearest.empty:
             gdf[column_name] = None
@@ -114,8 +102,8 @@ class SpatialMetricsService:
         nearest_id_series = nearest_per_feature[right_id_column_name]
 
         # Align computed values back to the original row order in `gdf`.
-        # 'nearest_per_feature' is indexed by left feature index; reindex fills 
-        #by matching index.
+        # 'nearest_per_feature' is indexed by left feature index
+        # reindex fills missing values by matching index
         row_index = gdf.reset_index(drop=True).index
         # Write nearest neighbor identifier (ID or fallback index).
         gdf[nearest_column_name] = nearest_id_series.reindex(row_index).values
@@ -151,6 +139,8 @@ class SpatialMetricsService:
         left_buffered.geometry = left_buffered.geometry.buffer(radius)
 
         # Spatial join to find all geometries within radius
+        # predicat="intersects" matches features whose buffered geometry 
+        # intersects (touch or overlap) with any part of the other feature
         neighbors = gpd.sjoin(
             left_buffered,
             right,
