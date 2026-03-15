@@ -1,7 +1,13 @@
 """Dialog widget for displaying shapefile attribute data in a table."""
 
 import pandas as pd
-from PyQt6.QtWidgets import QDialog, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import (
+    QDialog,
+    QTableWidget,
+    QTableWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
 
 
 class AttributeTableDialog(QDialog):
