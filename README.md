@@ -51,5 +51,5 @@ poetry run ruff check src
 #### Run specific ruff check e.g. missing docstrings (D1xx rules)
 
 ```bash
-poetry run ruff check --select D1 src tests
+poetry run ruff check --select D1 src
 ```
