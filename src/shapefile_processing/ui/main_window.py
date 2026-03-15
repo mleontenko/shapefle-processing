@@ -109,6 +109,7 @@ class MainWindow(QMainWindow):
             self.shapefile_manager.loaded_gdf is not None
             and not self.shapefile_manager.loaded_gdf.empty
         )
+        self.parameters_action.setEnabled(has_loaded_features)
         self.assign_ids_action.setEnabled(has_loaded_features)
         self.calculate_spatial_attributes_action.setEnabled(has_loaded_features)
         self.data_quality_action.setEnabled(has_loaded_features)
